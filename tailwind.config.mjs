@@ -7,10 +7,29 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        blob: "blob 7s infinite",
+      },
+      keyframes: {
+        blob: {
+          "0%": {
+            transform: "translate(0px, 0px) scale(1)",
+          },
+          "33%": {
+            transform: "translate(30px, -50px) scale(1.1)",
+          },
+          "66%": {
+            transform: "translate(-20px, 20px) scale(0.9)",
+          },
+          "100%": {
+            transform: "translate(0px, 0px) scale(1)",
+          },
+        },
+      },
       fontFamily: {
-        'sans': ['DM Sans', 'Arial', 'sans-serif'],
-        'heading': ['Inter', '-apple-system', 'system-ui', 'BlinkMacSystemFont'],
-        'accent': ['Poppins', 'Helvetica', 'sans-serif']
+        display: ['Clash Display', '-apple-system', 'system-ui'],
+        sans: ['Plus Jakarta Sans', 'Arial', 'sans-serif'],
+        general: ['GeneralSans', 'system-ui', 'sans-serif'],
       },
       colors: {
         primary: '#1E88E5',
@@ -20,8 +39,13 @@ export default {
         light: '#F5F7FA',
         'primary-dark': '#1976D2',
         'accent-dark': '#00ACC1',
-        'secondary-dark': '#651FFF'
-      }
+        'secondary-dark': '#651FFF',
+        'text-primary': '#FAF3E0',
+        'text-secondary': '#4A5568',
+        'text-muted': '#718096',
+        'text-light': '#A0AEC0',
+        'text-white': '#FFFFFF'
+      },
     },
   },
   plugins: [],
