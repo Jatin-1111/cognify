@@ -2,9 +2,94 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import useAuth from '@/app/components/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Info, Phone } from 'lucide-react'
+import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react'
+import useAuth from '@/app/hooks/useAuth'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
+import { cn } from "@/lib/utils"
+
+// Utility components
+const LabelInputContainer = ({
+    children,
+    className,
+    delay = 0
+}) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+                duration: 0.4,
+                delay: delay,
+                ease: [0.22, 1, 0.36, 1]
+            }}
+            className={cn("flex flex-col space-y-2 w-full", className)}
+        >
+            {children}
+        </motion.div>
+    );
+};
+
+const BottomGradient = () => {
+    return (
+        <>
+            <span
+                className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+            <span
+                className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+        </>
+    );
+};
+
+// Shimmer effect animation for the button
+const ShimmerButton = ({ children, className, isLoading, delay = 0, ...props }) => {
+    return (
+        <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+                duration: 0.4,
+                delay: delay,
+                ease: [0.22, 1, 0.36, 1]
+            }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className={cn(
+                "relative group/btn overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 w-full text-white rounded-xl h-11 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-all duration-300",
+                isLoading ? "opacity-70 cursor-not-allowed" : "",
+                className
+            )}
+            disabled={isLoading}
+            {...props}
+        >
+            <div className="relative z-10 flex items-center justify-center">
+                {children}
+            </div>
+            <div className="absolute inset-0 z-0 w-full translate-x-[-100%] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-all duration-700 group-hover/btn:translate-x-[100%] group-hover/btn:opacity-100" />
+            <BottomGradient />
+        </motion.button>
+    );
+};
+
+// FadeInUp animation component
+const FadeInUp = ({ children, delay = 0, ...props }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+                duration: 0.4,
+                delay: delay,
+                ease: [0.22, 1, 0.36, 1]  // Cubic bezier for smooth entrance
+            }}
+            {...props}
+        >
+            {children}
+        </motion.div>
+    );
+};
 
 const SignUp = () => {
     const [showPassword, setShowPassword] = useState(false)
@@ -24,10 +109,11 @@ const SignUp = () => {
         phone: '',
         password: '',
         confirmPassword: '',
+        general: ''
     })
 
-    const { setAuth } = useAuth() // Add this
-    const router = useRouter() // Add this
+    const { setAuth } = useAuth()
+    const router = useRouter()
 
     const validateUsername = (username) => {
         if (!username) return 'Username is required'
@@ -103,6 +189,7 @@ const SignUp = () => {
             phone: validatePhone(formData.phone),
             password: validatePassword(formData.password),
             confirmPassword: validateConfirmPassword(formData.confirmPassword),
+            general: ''
         };
 
         if (Object.values(newErrors).some(error => error)) {
@@ -151,6 +238,7 @@ const SignUp = () => {
             setIsLoading(false);
         }
     };
+
     const getPasswordStrengthColor = () => {
         switch (passwordStrength) {
             case 0: return 'bg-red-500'
@@ -163,262 +251,299 @@ const SignUp = () => {
     }
 
     return (
-        <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-neutral-900 to-neutral-950">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-md px-4 py-8"
+                className="max-w-md w-full mx-auto rounded-2xl p-4 md:p-8 shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800"
             >
-                <div className="relative bg-neutral-900/50 backdrop-blur-2xl rounded-2xl shadow-2xl p-8 border border-neutral-800">
-                    <div className="text-center mb-8">
-                        <motion.h2
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-3xl font-display font-bold text-white mb-2"
-                        >
+                <FadeInUp delay={0.1}>
+                    <div className="text-center mb-6">
+                        <h2 className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 mb-1">
                             Create Account
-                        </motion.h2>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-neutral-400"
-                        >
+                        </h2>
+                        <p className="text-neutral-600 text-sm max-w-sm mx-auto dark:text-neutral-400">
                             Join us and start your learning journey
-                        </motion.p>
+                        </p>
+                    </div>
+                </FadeInUp>
+
+                <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+                    {/* Email Field */}
+                    <LabelInputContainer delay={0.2}>
+                        <Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            Email Address
+                        </Label>
+                        <div className="relative group">
+                            <Input
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="your@email.com"
+                                className="h-11 w-full rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black px-10 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 group-hover:border-blue-400 dark:group-hover:border-blue-600 dark:placeholder:text-neutral-500"
+                            />
+                            <Mail className="absolute left-3 top-3 h-5 w-5 text-neutral-400 group-hover:text-blue-500 transition-colors" />
+                        </div>
+                        <AnimatePresence>
+                            {errors.email && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.email}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* Username Field */}
+                    <LabelInputContainer delay={0.3}>
+                        <Label htmlFor="username" className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            Username
+                        </Label>
+                        <div className="relative group">
+                            <Input
+                                id="username"
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleInputChange}
+                                placeholder="Choose a username"
+                                className="h-11 w-full rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black px-10 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 group-hover:border-blue-400 dark:group-hover:border-blue-600 dark:placeholder:text-neutral-500"
+                            />
+                            <User className="absolute left-3 top-3 h-5 w-5 text-neutral-400 group-hover:text-blue-500 transition-colors" />
+                        </div>
+                        <AnimatePresence>
+                            {errors.username && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.username}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* Phone Field */}
+                    <LabelInputContainer delay={0.4}>
+                        <Label htmlFor="phone" className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            Phone Number
+                        </Label>
+                        <div className="relative group">
+                            <Input
+                                id="phone"
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="Enter your phone number"
+                                className="h-11 w-full rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black px-10 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 group-hover:border-blue-400 dark:group-hover:border-blue-600 dark:placeholder:text-neutral-500"
+                            />
+                            <Phone className="absolute left-3 top-3 h-5 w-5 text-neutral-400 group-hover:text-blue-500 transition-colors" />
+                        </div>
+                        <AnimatePresence>
+                            {errors.phone && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.phone}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* Password Field */}
+                    <LabelInputContainer delay={0.5}>
+                        <Label htmlFor="password" className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            Password
+                        </Label>
+                        <div className="relative group">
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Create a strong password"
+                                className="h-11 w-full rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black px-10 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 group-hover:border-blue-400 dark:group-hover:border-blue-600 dark:placeholder:text-neutral-500"
+                            />
+                            <Lock className="absolute left-3 top-3 h-5 w-5 text-neutral-400 group-hover:text-blue-500 transition-colors" />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-3 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-5 w-5" />
+                                ) : (
+                                    <Eye className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
+                        {formData.password && (
+                            <div className="mt-2">
+                                <div className="flex gap-1 mb-1">
+                                    {[...Array(4)].map((_, index) => (
+                                        <div
+                                            key={index}
+                                            className={`h-1 w-full rounded-full transition-colors ${index < passwordStrength ? getPasswordStrengthColor() : 'bg-neutral-200 dark:bg-neutral-700'}`}
+                                        />
+                                    ))}
+                                </div>
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
+                                    <Info size={12} />
+                                    Password must be at least 8 characters with uppercase, number, and special character
+                                </p>
+                            </div>
+                        )}
+                        <AnimatePresence>
+                            {errors.password && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.password}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* Confirm Password Field */}
+                    <LabelInputContainer delay={0.6}>
+                        <Label htmlFor="confirmPassword" className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            Confirm Password
+                        </Label>
+                        <div className="relative group">
+                            <Input
+                                id="confirmPassword"
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                placeholder="Confirm your password"
+                                className="h-11 w-full rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black px-10 py-2 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 group-hover:border-blue-400 dark:group-hover:border-blue-600 dark:placeholder:text-neutral-500"
+                            />
+                            <Lock className="absolute left-3 top-3 h-5 w-5 text-neutral-400 group-hover:text-blue-500 transition-colors" />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-3 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                            >
+                                {showConfirmPassword ? (
+                                    <EyeOff className="h-5 w-5" />
+                                ) : (
+                                    <Eye className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
+                        <AnimatePresence>
+                            {errors.confirmPassword && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.confirmPassword}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* General Error Message */}
+                    <AnimatePresence>
+                        {errors.general && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3"
+                            >
+                                <p className="text-red-600 dark:text-red-400 text-sm text-center">{errors.general}</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Submit Button */}
+                    <ShimmerButton
+                        type="submit"
+                        isLoading={isLoading}
+                        delay={0.7}
+                    >
+                        {isLoading ? (
+                            <div className="flex items-center justify-center space-x-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Creating account...</span>
+                            </div>
+                        ) : (
+                            <span>Create Account</span>
+                        )}
+                    </ShimmerButton>
+
+                    <FadeInUp delay={0.8}>
+                        <div className="relative flex items-center justify-center my-4">
+                            <div className="absolute w-full border-t border-neutral-300 dark:border-neutral-700"></div>
+                            <div className="relative bg-white dark:bg-black px-4 text-sm text-neutral-500 dark:text-neutral-400">
+                                or sign up with
+                            </div>
+                        </div>
+                    </FadeInUp>
+
+                    {/* Social Signup Buttons */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <FadeInUp delay={0.9}>
+                            <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="relative group/btn flex space-x-2 items-center justify-center px-4 h-11 text-neutral-700 dark:text-neutral-300 rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 w-full"
+                            >
+                                <IconBrandGithub className="h-5 w-5" />
+                                <span className="text-sm font-medium">GitHub</span>
+                                <BottomGradient />
+                            </motion.button>
+                        </FadeInUp>
+
+                        <FadeInUp delay={1.0}>
+                            <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="relative group/btn flex space-x-2 items-center justify-center px-4 h-11 text-neutral-700 dark:text-neutral-300 rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all duration-200 w-full"
+                            >
+                                <IconBrandGoogle className="h-5 w-5" />
+                                <span className="text-sm font-medium">Google</span>
+                                <BottomGradient />
+                            </motion.button>
+                        </FadeInUp>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Email Field */}
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
-                                Email Address
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-neutral-800/50 rounded-lg border border-neutral-700 
-                                        text-white placeholder-neutral-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                                        outline-none transition-all"
-                                    placeholder="Enter your email"
-                                />
-                                <Mail className="absolute left-3 top-3.5 h-5 w-5 text-neutral-500" />
-                            </div>
-                            <AnimatePresence>
-                                {errors.email && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="text-red-500 text-sm mt-1"
-                                    >
-                                        {errors.email}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Username Field */}
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
-                                Username
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleInputChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-neutral-800/50 rounded-lg border border-neutral-700 
-                text-white placeholder-neutral-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                outline-none transition-all"
-                                    placeholder="Choose a username"
-                                />
-                                <User className="absolute left-3 top-3.5 h-5 w-5 text-neutral-500" />
-                            </div>
-                            <AnimatePresence>
-                                {errors.username && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="text-red-500 text-sm mt-1"
-                                    >
-                                        {errors.username}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Phone Field */}
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
-                                Phone Number
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full pl-10 pr-4 py-3 bg-neutral-800/50 rounded-lg border border-neutral-700 
-                text-white placeholder-neutral-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                outline-none transition-all"
-                                    placeholder="Enter your phone number"
-                                />
-                                <Phone className="absolute left-3 top-3.5 h-5 w-5 text-neutral-500" />
-                            </div>
-                            <AnimatePresence>
-                                {errors.phone && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="text-red-500 text-sm mt-1"
-                                    >
-                                        {errors.phone}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Password Field */}
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className="w-full pl-10 pr-12 py-3 bg-neutral-800/50 rounded-lg border border-neutral-700 
-                                        text-white placeholder-neutral-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                                        outline-none transition-all"
-                                    placeholder="Create a password"
-                                />
-                                <Lock className="absolute left-3 top-3.5 h-5 w-5 text-neutral-500" />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-3 text-neutral-500 hover:text-neutral-400 transition-colors"
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-5 w-5" />
-                                    ) : (
-                                        <Eye className="h-5 w-5" />
-                                    )}
-                                </button>
-                            </div>
-                            {formData.password && (
-                                <div className="mt-2">
-                                    <div className="flex gap-1 mb-1">
-                                        {[...Array(4)].map((_, index) => (
-                                            <div
-                                                key={index}
-                                                className={`h-1 w-full rounded-full transition-colors ${index < passwordStrength ? getPasswordStrengthColor() : 'bg-neutral-700'}`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className="text-xs text-neutral-500 flex items-center gap-1">
-                                        <Info size={12} />
-                                        Password must be at least 8 characters with uppercase, number, and special character
-                                    </p>
-                                </div>
-                            )}
-                            <AnimatePresence>
-                                {errors.password && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="text-red-500 text-sm mt-1"
-                                    >
-                                        {errors.password}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Confirm Password Field */}
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-300 mb-2">
-                                Confirm Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleInputChange}
-                                    className="w-full pl-10 pr-12 py-3 bg-neutral-800/50 rounded-lg border border-neutral-700 
-                                        text-white placeholder-neutral-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-                                        outline-none transition-all"
-                                    placeholder="Confirm your password"
-                                />
-                                <Lock className="absolute left-3 top-3.5 h-5 w-5 text-neutral-500" />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-3 text-neutral-500 hover:text-neutral-400 transition-colors"
-                                >
-                                    {showConfirmPassword ? (
-                                        <EyeOff className="h-5 w-5" />
-                                    ) : (
-                                        <Eye className="h-5 w-5" />
-                                    )}
-                                </button>
-                            </div>
-                            <AnimatePresence>
-                                {errors.confirmPassword && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="text-red-500 text-sm mt-1"
-                                    >
-                                        {errors.confirmPassword}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Submit Button */}
-                        <motion.button
-                            onClick={handleSubmit}
-                            disabled={isLoading}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg 
-                                transition-colors duration-300 flex items-center justify-center space-x-2 
-                                disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                    <span>Creating account...</span>
-                                </>
-                            ) : (
-                                <span>Create Account</span>
-                            )}
-                        </motion.button>
-
-                        {/* Sign In Link */}
-                        <div className="text-center text-sm text-neutral-400 mt-6">
+                    {/* Sign In Link */}
+                    <FadeInUp delay={1.1}>
+                        <div className="text-center text-sm text-neutral-600 dark:text-neutral-400 mt-6">
                             Already have an account?{' '}
                             <Link
                                 href="/login"
-                                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                                className="text-blue-600 dark:text-blue-500 hover:text-blue-800 dark:hover:text-blue-400 font-medium transition-colors"
                             >
                                 Sign in here
                             </Link>
                         </div>
-                    </form>
-                </div>
+                    </FadeInUp>
+                </form>
             </motion.div>
         </div>
     );

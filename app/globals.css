@@ -37,3 +37,58 @@
 .animation-delay-4000 {
     animation-delay: 4s;
 }
+
+/* Lenis Smooth Scrolling Styles */
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(23, 23, 23, 0.6);
+    /* neutral-900 with opacity */
+    border-radius: 100vh;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3B82F6;
+    /* blue-500 */
+    border-radius: 100vh;
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2563EB;
+    /* blue-600 - slightly darker on hover */
+}
+
+::-webkit-scrollbar-corner {
+    background: rgba(23, 23, 23, 0.6);
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #3B82F6 rgba(23, 23, 23, 0.6);
+}

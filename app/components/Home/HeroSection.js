@@ -1,9 +1,9 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import { BackgroundBeams } from '../ui/background-beams'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Search, Sparkles, Users, BookOpen, Trophy } from 'lucide-react'
 import { Cover } from '../ui/cover'
+import { Spotlight } from '../ui/spotlight'
 
 const fadeInUpVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -15,7 +15,6 @@ const fadeInUpVariants = {
 }
 
 const HeroSection = () => {
-  const prefersReducedMotion = useReducedMotion()
   const [searchQuery, setSearchQuery] = useState('')
 
   const features = useMemo(() => [
@@ -30,7 +29,8 @@ const HeroSection = () => {
   ], [])
 
   return (
-    <div className="min-h-[90vh] w-full bg-neutral-950 relative flex flex-col items-center justify-center py-20">
+    <div className="min-h-[90vh] w-full bg-neutral-950 relative flex flex-col items-center justify-center py-32 overflow-hidden">
+      <Spotlight />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
@@ -127,7 +127,6 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </div>
-      {!prefersReducedMotion && <BackgroundBeams />}
     </div>
   )
 }
