@@ -3,13 +3,13 @@ import Link from 'next/link'
 import React, { useRef, useState, useEffect } from 'react'
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Search, Menu, X, ChevronDown, User, BookOpen, Code, Star, Lightbulb } from 'lucide-react'
-import { useAuth } from '@/app/hooks/useAuth'  // Updated import path to match our structure
+import { useAuth } from '@/app/hooks/useAuth'
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [activeSection, setActiveSection] = useState(null)
     const [visible, setVisible] = useState(true)
-    const { user, logout, isAuthenticated } = useAuth()  // Updated to destructure user and isAuthenticated
+    const { user, logout, isAuthenticated } = useAuth()
     const menuRef = useRef(null)
     const { scrollYProgress } = useScroll()
 

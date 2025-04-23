@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkUserLoggedIn = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/user/check-auth', {
+                const res = await fetch('https://validebackend.onrender.com/api/user/check-auth', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
         setError(null);
 
         try {
-            const res = await fetch('http://localhost:5000/api/user/register', {
+            const res = await fetch('https://validebackend.onrender.com/api/user/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
         setError(null);
 
         try {
-            const res = await fetch('http://localhost:5000/api/user/login', {
+            const res = await fetch('https://validebackend.onrender.com/api/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
     // Logout user
     const logout = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/user/logout', {
+            const res = await fetch('https://validebackend.onrender.com/api/user/logout', {
                 method: 'POST',
                 credentials: 'include',
             });

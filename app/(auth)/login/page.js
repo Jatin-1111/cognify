@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react'
-import { useAuth } from '@/app/hooks/useAuth'  // Updated import path
+import { useAuth } from '@/app/hooks/useAuth'
 import { Input } from '@/app/components/ui/input'
 import { Label } from '@/app/components/ui/label'
 import { cn } from "@/lib/utils"
@@ -82,7 +82,7 @@ const FadeInUp = ({ children, delay = 0, ...props }) => {
             transition={{
                 duration: 0.4,
                 delay: delay,
-                ease: [0.22, 1, 0.36, 1]  // Cubic bezier for smooth entrance
+                ease: [0.22, 1, 0.36, 1]
             }}
             {...props}
         >
@@ -105,7 +105,7 @@ const Login = () => {
         general: ''
     })
 
-    const { login } = useAuth()  // Using the login function from our AuthProvider
+    const { login } = useAuth()
     const router = useRouter()
 
     const validateEmail = (email) => {
@@ -135,7 +135,6 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // Client-side validation before sending to server
         const newErrors = {
             email: validateEmail(formData.email),
             password: !formData.password ? 'Password is required' : '',
@@ -147,12 +146,11 @@ const Login = () => {
             return
         }
 
-        setIsLoading(true) // Set UI loading state
+        setIsLoading(true)
 
         try {
             const result = await login(formData.email.trim(), formData.password)
 
-            // But we need to handle failures at the UI level
             if (!result.success) {
                 setErrors(prev => ({
                     ...prev,
@@ -160,13 +158,11 @@ const Login = () => {
                 }))
             }
         } catch (error) {
-            // Catch any unexpected errors
             setErrors(prev => ({
                 ...prev,
                 general: error.message || 'An unexpected error occurred'
             }))
         } finally {
-            // Always reset loading state
             setIsLoading(false)
         }
     }

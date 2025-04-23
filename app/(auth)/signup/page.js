@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Mail, Lock, User, Loader2, Info, Phone } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Loader2, Info, Phone, BookOpen, GraduationCap } from 'lucide-react'
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react'
 import useAuth from '@/app/hooks/useAuth'
 import { Input } from '@/app/components/ui/input'
@@ -100,6 +100,7 @@ const SignUp = () => {
         username: '',
         email: '',
         phone: '',
+        role: 'student', // Default role is student
         password: '',
         confirmPassword: '',
     })
@@ -107,6 +108,7 @@ const SignUp = () => {
         username: '',
         email: '',
         phone: '',
+        role: '',
         password: '',
         confirmPassword: '',
         general: ''
@@ -132,6 +134,12 @@ const SignUp = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!email) return 'Email is required'
         if (!emailRegex.test(email)) return 'Please enter a valid email'
+        return ''
+    }
+
+    const validateRole = (role) => {
+        if (!role) return 'Please select a role'
+        if (!['student', 'teacher'].includes(role)) return 'Invalid role selected'
         return ''
     }
 
@@ -180,6 +188,20 @@ const SignUp = () => {
         }
     }
 
+    const handleRoleChange = (role) => {
+        setFormData(prev => ({
+            ...prev,
+            role
+        }));
+
+        if ('role' in errors) {
+            setErrors(prev => ({
+                ...prev,
+                role: ''
+            }));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -187,6 +209,7 @@ const SignUp = () => {
             username: validateUsername(formData.username),
             email: validateEmail(formData.email),
             phone: validatePhone(formData.phone),
+            role: validateRole(formData.role),
             password: validatePassword(formData.password),
             confirmPassword: validateConfirmPassword(formData.confirmPassword),
             general: ''
@@ -210,6 +233,7 @@ const SignUp = () => {
                     username: formData.username.trim(),
                     email: formData.email.trim(),
                     phone: formData.phone.trim(),
+                    role: formData.role,
                     password: formData.password,
                 }),
             });
@@ -251,7 +275,7 @@ const SignUp = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-neutral-900 to-neutral-950">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-neutral-900 to-neutral-950 py-32">
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -358,6 +382,84 @@ const SignUp = () => {
                                     className="text-red-500 text-xs mt-1"
                                 >
                                     {errors.phone}
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </LabelInputContainer>
+
+                    {/* Role Selection Field */}
+                    <LabelInputContainer delay={0.45}>
+                        <Label className="text-neutral-700 dark:text-neutral-300 font-medium text-sm">
+                            I want to
+                        </Label>
+                        <div className="grid grid-cols-2 gap-4 mt-1">
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => handleRoleChange('student')}
+                                className={`relative cursor-pointer rounded-xl border ${formData.role === 'student'
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                        : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                    } p-4 transition-all`}
+                            >
+                                <div className="flex flex-col items-center justify-center text-center">
+                                    <GraduationCap className={`h-8 w-8 mb-2 ${formData.role === 'student'
+                                            ? 'text-blue-500'
+                                            : 'text-neutral-500 dark:text-neutral-400'
+                                        }`} />
+                                    <p className={`font-medium ${formData.role === 'student'
+                                            ? 'text-blue-700 dark:text-blue-400'
+                                            : 'text-neutral-700 dark:text-neutral-300'
+                                        }`}>
+                                        Study Courses
+                                    </p>
+                                    <p className="text-xs mt-1 text-neutral-500 dark:text-neutral-400">
+                                        Join as a student
+                                    </p>
+                                </div>
+                                {formData.role === 'student' && (
+                                    <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>
+                                )}
+                            </motion.div>
+
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => handleRoleChange('teacher')}
+                                className={`relative cursor-pointer rounded-xl border ${formData.role === 'teacher'
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                        : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                    } p-4 transition-all`}
+                            >
+                                <div className="flex flex-col items-center justify-center text-center">
+                                    <BookOpen className={`h-8 w-8 mb-2 ${formData.role === 'teacher'
+                                            ? 'text-blue-500'
+                                            : 'text-neutral-500 dark:text-neutral-400'
+                                        }`} />
+                                    <p className={`font-medium ${formData.role === 'teacher'
+                                            ? 'text-blue-700 dark:text-blue-400'
+                                            : 'text-neutral-700 dark:text-neutral-300'
+                                        }`}>
+                                        Create Courses
+                                    </p>
+                                    <p className="text-xs mt-1 text-neutral-500 dark:text-neutral-400">
+                                        Join as a teacher
+                                    </p>
+                                </div>
+                                {formData.role === 'teacher' && (
+                                    <div className="absolute top-2 right-2 h-3 w-3 rounded-full bg-blue-500"></div>
+                                )}
+                            </motion.div>
+                        </div>
+                        <AnimatePresence>
+                            {errors.role && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-red-500 text-xs mt-1"
+                                >
+                                    {errors.role}
                                 </motion.p>
                             )}
                         </AnimatePresence>
