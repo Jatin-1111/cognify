@@ -114,7 +114,7 @@ const SignUp = () => {
         general: ''
     })
 
-    const { setAuth } = useAuth()
+    const { register } = useAuth()
     const router = useRouter()
 
     const validateUsername = (username) => {
@@ -222,36 +222,20 @@ const SignUp = () => {
 
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/user/register', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    username: formData.username.trim(),
-                    email: formData.email.trim(),
-                    phone: formData.phone.trim(),
-                    role: formData.role,
-                    password: formData.password,
-                }),
-            });
+            // Use the register function from your auth context
+            const { success, error } = await register(
+                formData.username.trim(),
+                formData.email.trim(),
+                formData.password,
+                formData.phone.trim(),
+                formData.role
+            );
 
-            const responseData = await response.json();
-
-            if (!response.ok || !responseData.success) {
-                throw new Error(responseData.message || "Registration failed");
+            if (!success) {
+                throw new Error(error || "Registration failed");
             }
 
-            // Update auth context with user data
-            setAuth({
-                user: responseData.data,
-                accessToken: responseData.token
-            });
-
-            // Redirect to dashboard or home
-            router.push("/");
+            // The register function already handles redirect in your AuthProvider
         }
         catch (error) {
             setErrors(prev => ({
@@ -398,18 +382,18 @@ const SignUp = () => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => handleRoleChange('student')}
                                 className={`relative cursor-pointer rounded-xl border ${formData.role === 'student'
-                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                    : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
                                     } p-4 transition-all`}
                             >
                                 <div className="flex flex-col items-center justify-center text-center">
                                     <GraduationCap className={`h-8 w-8 mb-2 ${formData.role === 'student'
-                                            ? 'text-blue-500'
-                                            : 'text-neutral-500 dark:text-neutral-400'
+                                        ? 'text-blue-500'
+                                        : 'text-neutral-500 dark:text-neutral-400'
                                         }`} />
                                     <p className={`font-medium ${formData.role === 'student'
-                                            ? 'text-blue-700 dark:text-blue-400'
-                                            : 'text-neutral-700 dark:text-neutral-300'
+                                        ? 'text-blue-700 dark:text-blue-400'
+                                        : 'text-neutral-700 dark:text-neutral-300'
                                         }`}>
                                         Study Courses
                                     </p>
@@ -427,18 +411,18 @@ const SignUp = () => {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => handleRoleChange('teacher')}
                                 className={`relative cursor-pointer rounded-xl border ${formData.role === 'teacher'
-                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                    : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-neutral-900'
                                     } p-4 transition-all`}
                             >
                                 <div className="flex flex-col items-center justify-center text-center">
                                     <BookOpen className={`h-8 w-8 mb-2 ${formData.role === 'teacher'
-                                            ? 'text-blue-500'
-                                            : 'text-neutral-500 dark:text-neutral-400'
+                                        ? 'text-blue-500'
+                                        : 'text-neutral-500 dark:text-neutral-400'
                                         }`} />
                                     <p className={`font-medium ${formData.role === 'teacher'
-                                            ? 'text-blue-700 dark:text-blue-400'
-                                            : 'text-neutral-700 dark:text-neutral-300'
+                                        ? 'text-blue-700 dark:text-blue-400'
+                                        : 'text-neutral-700 dark:text-neutral-300'
                                         }`}>
                                         Create Courses
                                     </p>

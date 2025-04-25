@@ -1,0 +1,318 @@
+# Cognify - E-Learning Platform
+
+Cognify is a comprehensive e-learning platform that connects instructors and students in an interactive online learning environment. The platform enables course creators to build and monetize educational content while providing students with a structured learning experience featuring high-quality courses across various disciplines.
+
+## Platform Purpose
+
+Cognify serves as a bridge between knowledge providers and knowledge seekers, aiming to democratize education by:
+
+1. Enabling experts to share their knowledge and skills through structured courses
+2. Providing students with accessible, high-quality learning materials
+3. Creating a marketplace for educational content with fair compensation for creators
+4. Supporting interactive learning with progress tracking and engagement features
+5. Building a community of lifelong learners through course discussions and instructor feedback
+
+## Core Features
+
+### For Course Creators
+
+#### Course Creation & Management
+- Detailed course builder with sections and lessons
+- Rich media uploads (video, PDFs, attachments)
+- Course pricing options (free, one-time payment, subscription)
+- Course analytics and student progress tracking
+
+#### Monetization Tools
+- Payment setup (connect bank account/PayPal)
+- Price setting with options for discounts/promotions
+- Revenue analytics dashboard
+
+#### Instructor Dashboard
+- Course performance metrics
+- Student engagement analytics
+- Revenue reports and payout history
+- Student communication tools
+
+### For Learners
+
+#### Course Marketplace
+- Browse courses with filtering and search
+- Course preview capabilities
+- Ratings and reviews system
+- Recommendations engine
+
+#### Learning Experience
+- Course progress tracking
+- Bookmarking and note-taking
+- Q&A with instructors
+- Certificates of completion
+
+#### Student Dashboard
+- Enrolled courses with progress indicators
+- Wishlist functionality
+- Purchase history
+- Learning statistics
+
+### Core Platform Features
+
+#### Payment System
+- Secure payment processing
+- Multi-currency support
+- Tax handling
+- Refund mechanism
+
+#### Authentication & Authorization
+- Role-based access control (student, instructor, admin)
+- Email verification
+- Password reset functionality
+
+#### Admin Dashboard
+- User management
+- Course approval workflow
+- Platform analytics
+- Revenue reporting
+
+## Technical Implementation
+
+### Technology Stack
+- **Frontend**: Next.js, React, Framer Motion, Tailwind CSS
+- **Backend**: Node.js, Express.js
+- **Database**: PostgreSQL (migrated from MongoDB)
+- **Storage**: Cloud storage for course media (S3 compatible)
+- **Authentication**: JWT-based authentication system
+- **Payments**: Integration with payment processors (Stripe/PayPal)
+
+### Frontend Components
+
+#### Course Creation
+- `/app/creator/courses/create` - Main course creation page
+- `/app/creator/courses/[courseId]/edit` - Course editing interface
+- `/app/creator/courses/[courseId]/content` - Lesson creation/editing
+- `/app/creator/courses/[courseId]/pricing` - Pricing and promotion setup
+
+#### Creator Dashboard
+- `/app/creator/dashboard` - Overview with key metrics
+- `/app/creator/analytics` - Detailed analytics
+- `/app/creator/revenue` - Revenue tracking and payouts
+- `/app/creator/students` - Student management
+
+#### Marketplace
+- `/app/courses` - Course browsing with filters
+- `/app/courses/[category]` - Category-specific browsing
+- `/app/courses/[courseId]` - Course detail page with purchase option
+- `/app/search` - Advanced search functionality
+
+#### Student Learning
+- `/app/learning/[courseId]` - Course consumption interface
+- `/app/learning/[courseId]/lesson/[lessonId]` - Specific lesson view
+- `/app/dashboard` - Student dashboard with enrolled courses
+- `/app/certificates` - Earned certificates
+
+#### Payment & Checkout
+- `/app/checkout/[courseId]` - Checkout process
+- `/app/payment/success` - Successful payment confirmation
+- `/app/payment/history` - Payment history for user
+
+### Backend Services and APIs
+
+#### 1. Authentication Service
+**Endpoints:**
+- `/api/auth/register` - User registration
+- `/api/auth/login` - User login
+- `/api/auth/logout` - User logout
+- `/api/auth/refresh-token` - JWT token refresh
+- `/api/auth/password-reset` - Password reset flow
+- `/api/auth/verify-email` - Email verification
+
+**Functionality:**
+- JWT-based authentication
+- Role-based access control (student, instructor, admin)
+- OAuth integration for social logins
+- Email verification workflow
+- Security monitoring
+
+#### 2. User Service
+**Endpoints:**
+- `/api/users/profile` - Get/update user profile
+- `/api/users/become-instructor` - Upgrade to instructor role
+- `/api/users/preferences` - User settings and preferences
+- `/api/users/notifications` - User notification settings
+
+**Functionality:**
+- Profile management
+- Role transitions
+- Notification preferences
+- Account settings
+
+#### 3. Course Service
+**Endpoints:**
+- `/api/courses` - Course CRUD operations
+- `/api/courses/search` - Advanced search with filters
+- `/api/courses/:id/sections` - Section management
+- `/api/courses/:id/lessons` - Lesson management
+- `/api/courses/:id/publish` - Course publishing workflow
+- `/api/courses/:id/media` - Media upload and management
+
+**Functionality:**
+- Course metadata management
+- Content structure management
+- Media storage (videos, PDFs, attachments)
+- Course approval workflow
+- Search indexing
+
+#### 4. Enrollment Service
+**Endpoints:**
+- `/api/enrollments` - Enrollment management
+- `/api/enrollments/:id/progress` - Progress tracking
+- `/api/enrollments/:id/complete` - Mark lessons/courses complete
+- `/api/enrollments/:id/certificate` - Generate certificates
+
+**Functionality:**
+- Enrollment processing
+- Progress tracking
+- Completion verification
+- Certificate generation
+
+#### 5. Payment Service
+**Endpoints:**
+- `/api/payments/checkout` - Initiate payment
+- `/api/payments/webhook` - Payment processor webhooks
+- `/api/payments/history` - User payment history
+- `/api/payments/refund` - Refund processing
+
+**Functionality:**
+- Integration with Stripe/PayPal
+- Secure payment processing
+- Transaction records
+- Refund workflow
+- Currency conversion
+
+## Database Schema (PostgreSQL)
+
+### Users
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(30) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  phone VARCHAR(20) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(10) NOT NULL DEFAULT 'student',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Courses
+```sql
+CREATE TABLE courses (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  instructor_id INTEGER NOT NULL,
+  thumbnail VARCHAR(255),
+  price DECIMAL(10, 2) NOT NULL,
+  original_price DECIMAL(10, 2),
+  level VARCHAR(50) NOT NULL,
+  duration VARCHAR(50) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  is_published BOOLEAN DEFAULT false,
+  is_featured BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+### Course Sections
+```sql
+CREATE TABLE course_sections (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  order_index INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+```
+
+### Course Lessons
+```sql
+CREATE TABLE course_lessons (
+  id SERIAL PRIMARY KEY,
+  section_id INTEGER NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  content TEXT,
+  video_url VARCHAR(255),
+  duration VARCHAR(50) NOT NULL,
+  is_free BOOLEAN DEFAULT false,
+  order_index INTEGER NOT NULL,
+  type VARCHAR(50) NOT NULL DEFAULT 'video',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (section_id) REFERENCES course_sections(id) ON DELETE CASCADE
+);
+```
+
+### Enrollments
+```sql
+CREATE TABLE enrollments (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL,
+  progress INTEGER DEFAULT 0,
+  enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+  UNIQUE(user_id, course_id)
+);
+```
+
+### Payments
+```sql
+CREATE TABLE payments (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  course_id INTEGER NOT NULL,
+  amount DECIMAL(10, 2) NOT NULL,
+  payment_method VARCHAR(50) NOT NULL,
+  transaction_id VARCHAR(255),
+  status VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+```
+
+## Implementation Phases
+
+### Phase 1: Foundation
+- Setup PostgreSQL database with schema
+- User authentication system (register, login, roles)
+- Basic course browsing functionality
+- Admin user management
+
+### Phase 2: Creator Experience
+- Course creation and management
+- Content uploading system
+- Basic instructor dashboard
+
+### Phase 3: Marketplace & Discovery
+- Course browsing and filtering
+- Search functionality
+- Course detail pages with previews
+
+### Phase 4: Payment & Monetization
+- Payment processing integration
+- Checkout flow
+- Revenue distribution to creators
+
+### Phase 5: Learning Experience
+- Enhanced course consumption interface
+- Progress tracking
+- Student engagement features
+- Certificates
+
+### Phase 6: Analytics & Optimization
+- Advanced analytics for creators
+- Recommendation engine
+- Platform performance monitoring
