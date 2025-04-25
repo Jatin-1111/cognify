@@ -64,8 +64,8 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(data.message || 'Registration failed');
             }
 
-            // Auto login after successful registration
-            await login(email, password);
+            // Redirect to verification pending page or login page
+            router.push('/verification-pending');
 
             return { success: true };
         } catch (error) {
@@ -107,6 +107,121 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Request password reset
+    const requestPasswordReset = async (email) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/user/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Failed to send reset link');
+            }
+
+            setLoading(false);
+            return { success: true, message: data.message };
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
+    // Reset password with token
+    const resetPassword = async (token, password) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/user/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Failed to reset password');
+            }
+
+            setLoading(false);
+            return { success: true, message: data.message };
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
+    // Validate reset token
+    const validateResetToken = async (token) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/user/validate-reset-token/${token}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Invalid or expired token');
+            }
+
+            setLoading(false);
+            return { success: true, message: data.message };
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
+    // Resend verification email
+    const resendVerificationEmail = async (email) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/user/resend-verification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Failed to resend verification email');
+            }
+
+            setLoading(false);
+            return { success: true, message: data.message };
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
     // Logout user
     const logout = async () => {
         try {
@@ -137,6 +252,10 @@ export const AuthProvider = ({ children }) => {
                 register,
                 login,
                 logout,
+                requestPasswordReset,
+                resetPassword,
+                validateResetToken,
+                resendVerificationEmail,
                 isAuthenticated: !!user,
             }}
         >
