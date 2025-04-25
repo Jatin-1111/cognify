@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { EnvelopeOpen, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
+import { MailOpen, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/app/hooks/useAuth'
 
 const BottomGradient = () => {
@@ -58,6 +58,13 @@ const VerificationPending = () => {
             return
         }
 
+        // Simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            setError('Please enter a valid email address')
+            return
+        }
+
         setIsLoading(true)
         setError('')
 
@@ -66,15 +73,24 @@ const VerificationPending = () => {
 
             if (result.success) {
                 setSuccess(true)
+                sessionStorage.setItem('verifiedEmail', email)
             } else {
-                setError(result.error || 'Failed to resend verification email')
+                // Handle specific error cases
+                if (result.error?.includes('already verified')) {
+                    setError('This email is already verified. Please try logging in.')
+                } else if (result.error?.includes('not found')) {
+                    setError('No account found with this email address. Please check the email or sign up.')
+                } else {
+                    setError(result.error || 'Failed to resend verification email')
+                }
             }
         } catch (error) {
             setError('An unexpected error occurred')
+            console.error('Verification error:', error)
         } finally {
             setIsLoading(false)
         }
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-neutral-900 to-neutral-950">
@@ -91,7 +107,7 @@ const VerificationPending = () => {
 
                 <div className="text-center mb-8">
                     <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <EnvelopeOpen className="w-10 h-10 text-blue-500" />
+                        <MailOpen className="w-10 h-10 text-blue-500" />
                     </div>
                     <h2 className="text-2xl font-bold mb-2">Verify Your Email</h2>
                     <p className="text-neutral-600 dark:text-neutral-400 mb-2">

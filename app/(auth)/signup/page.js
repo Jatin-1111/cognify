@@ -234,13 +234,17 @@ const SignUp = () => {
             if (!success) {
                 throw new Error(error || "Registration failed");
             }
-
-            // The register function already handles redirect in your AuthProvider
         }
         catch (error) {
+            let errorMessage = error.message || 'An error occurred during registration';
+
+            if (errorMessage.includes('Email already exists')) {
+                errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+            }
+
             setErrors(prev => ({
                 ...prev,
-                general: error.message || 'An error occurred during registration'
+                general: errorMessage
             }));
         } finally {
             setIsLoading(false);

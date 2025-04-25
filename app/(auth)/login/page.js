@@ -156,6 +156,10 @@ const Login = () => {
                     ...prev,
                     general: result.error || 'Login failed'
                 }))
+            } else {
+                if (formData.rememberMe) {
+                    localStorage.setItem('rememberEmail', formData.email)
+                }
             }
         } catch (error) {
             setErrors(prev => ({
